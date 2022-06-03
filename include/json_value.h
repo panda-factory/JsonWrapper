@@ -6,7 +6,6 @@
 #define JSONWRAPPER_JSON_VALUE_H
 
 #include "value.h"
-#include "json_object.h"
 
 namespace wtf {
 class JsonValue : public Value {
@@ -23,9 +22,19 @@ public:
 
     virtual std::unique_ptr<JsonValue> GetValue(const std::string& key) const = 0;
 
-    virtual std::unique_ptr<JsonObject> GetObject() const = 0;
+    virtual int Put(const char* key, const char* value) = 0;
 
-    //virtual JsonValue& operator [](const std::string key) const = 0;
+    static std::unique_ptr<JsonValue> Create(bool value, bool isRoot = false);
+
+    static std::unique_ptr<JsonValue> Create(int32_t number, bool isRoot = false);
+
+    static std::unique_ptr<JsonValue> Create(double number, bool isRoot = false);
+
+    static std::unique_ptr<JsonValue> Create(const char* str, bool isRoot = false);
+
+    static std::unique_ptr<JsonValue> CreateObject(bool isRoot = false);
+
+    static std::unique_ptr<JsonValue> CreateArray(bool isRoot = false);
 };
 } // namespace wtf
 #endif //JSONWRAPPER_JSON_VALUE_H

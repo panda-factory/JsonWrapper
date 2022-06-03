@@ -17,7 +17,10 @@ const JsonMessageCodec& JsonMessageCodec::GetInstance()
 std::unique_ptr<JsonValue> JsonMessageCodecImpl::DecodeMessageInternal(const uint8_t* binaryMessage,
                                                                        const size_t messageSize) const
 {
-    return std::make_unique<JsonValueImpl>(cJSON_ParseWithOpts(reinterpret_cast<const char*>(binaryMessage), nullptr, true));
+    return std::make_unique<JsonValueImpl>(cJSON_ParseWithOpts(reinterpret_cast<const char*>(binaryMessage),
+                                                               nullptr,
+                                                               true),
+                                           true);
 }
 
 

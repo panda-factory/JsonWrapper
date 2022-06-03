@@ -3,16 +3,54 @@
 //
 
 #include "json_value_impl.h"
-#include "json_object_impl.h"
 
 namespace wtf {
+
+std::unique_ptr<JsonValue> JsonValue::Create(bool value, bool isRoot)
+{
+    if (value) {
+        return std::make_unique<JsonValueImpl>(cJSON_CreateTrue(), isRoot);
+    } else {
+        return std::make_unique<JsonValueImpl>(cJSON_CreateFalse(), isRoot);
+    }
+}
+
+std::unique_ptr<JsonValue> JsonValue::Create(int32_t num, bool isRoot)
+{
+    return JsonValue::Create(num, isRoot);
+}
+
+std::unique_ptr<JsonValue> JsonValue::Create(double num, bool isRoot)
+{
+    return std::make_unique<JsonValueImpl>(cJSON_CreateNumber(num), isRoot);
+}
+
+std::unique_ptr<JsonValue> JsonValue::Create(const char* str, bool isRoot)
+{
+    return std::make_unique<JsonValueImpl>(cJSON_CreateString(str), isRoot);
+}
+
+std::unique_ptr<JsonValue> JsonValue::CreateObject(bool isRoot)
+{
+    return std::make_unique<JsonValueImpl>(cJSON_CreateObject(), isRoot);
+}
+
+std::unique_ptr<JsonValue> JsonValue::CreateArray(bool isRoot)
+{
+    return std::make_unique<JsonValueImpl>(cJSON_CreateArray(), isRoot);
+}
+
 JsonValueImpl::JsonValueImpl(cJSON* object)
     : object_(object)
 {}
 
+JsonValueImpl::JsonValueImpl(cJSON* object, bool isRoot)
+    : object_(object), isRoot_(isRoot)
+{}
+
 JsonValueImpl::~JsonValueImpl()
 {
-    if (object_ != nullptr) {
+    if (object_ != nullptr && isRoot_) {
         cJSON_Delete(object_);
     }
     object_ = nullptr;
@@ -73,20 +111,27 @@ std::string JsonValueImpl::GetString() const
     return ((object_ == nullptr) || (object_->valuestring == nullptr)) ? "" : std::string(object_->valuestring);
 }
 
+std::unique_ptr<JsonValue> JsonValueImpl::GetValue(const std::string& key) const
+{
+    return std::make_unique<JsonValueImpl>(cJSON_GetObjectItem(object_, key.c_str()));
+}
+
 bool JsonValueImpl::Contains(const std::string& key) const
 {
     return cJSON_HasObjectItem(object_, key.c_str());
 }
 
-std::unique_ptr<JsonValue> JsonValueImpl::GetValue(const std::string& key) const
+int JsonValueImpl::Put(const char* key, const char* value)
 {
-    return std::make_unique<JsonValueImpl>(cJSON_GetObjectItem(object_, key.c_str()));
-}
-std::unique_ptr<JsonObject> JsonValueImpl::GetObject() const
-{
-    if (IsObject()) {
-        return std::make_unique<JsonObjectImpl>(object_);
+    if (!value || !key) {
+        return false;
     }
-    return std::make_unique<JsonObjectImpl>();
+
+    cJSON* child = cJSON_CreateString(value);
+    if (child == nullptr) {
+        return false;
+    }
+    cJSON_AddItemToObject(object_, key, child);
+    return true;
 }
 } // namespace wtf

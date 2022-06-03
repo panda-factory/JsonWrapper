@@ -76,12 +76,68 @@ TEST(JsonValueTest, JsonValueTest006)
     std::string key = "JsonValueTest";
     std::string value = "JsonValueTest006";
 
-    auto object = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
-    ASSERT_TRUE(object);
-    EXPECT_TRUE(object->IsObject());
-    EXPECT_TRUE(object->Contains(key));
-    EXPECT_FALSE(object->Contains(value));
-    //ASSERT_TRUE(object->GetValue(key));
-    //EXPECT_EQ(object->GetValue(key)->GetString(), value);
-    //EXPECT_EQ(value->GetString(), value);
+    auto jsonValue = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
+    ASSERT_TRUE(jsonValue);
+    EXPECT_TRUE(jsonValue->IsObject());
+    EXPECT_TRUE(jsonValue->Contains(key));
+    EXPECT_FALSE(jsonValue->Contains(value));
+    ASSERT_TRUE(jsonValue->GetValue(key));
+    EXPECT_EQ(jsonValue->GetValue(key)->GetString(), value);
+}
+
+/**
+ * @tc.name: JsonValueTest007
+ * @tc.desc: Check json wrapper function for array value
+ */
+TEST(JsonValueTest, JsonValueTest007)
+{
+    std::string testJson = "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]";
+    size_t size = 10;
+    int32_t testArray[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    auto jsonValue = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
+    ASSERT_TRUE(jsonValue);
+    EXPECT_TRUE(jsonValue->IsArray());
+//    EXPECT_TRUE(jsonValue->GetSize() == size);
+//    for(int i = 0; i < jsonArray->GetSize(); i++) {
+//        EXPECT_TRUE(jsonArray->GetItem(i)->GetInt() == testArray[i]);
+//        EXPECT_TRUE((*jsonArray)[i]->GetInt() == testArray[i]);
+//    }
+}
+
+/**
+ * @tc.name: JsonValueTest008
+ * @tc.desc: Check json wrapper function for array value
+ */
+TEST(JsonValueTest, JsonValueTest008)
+{
+    std::string testJson = "[]";
+
+    auto jsonValue = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
+    ASSERT_TRUE(jsonValue);
+    EXPECT_TRUE(jsonValue->IsArray());
+//    auto jsonArray = jsonValue->GetArray();
+//    ASSERT_TRUE(jsonArray);
+//    EXPECT_TRUE(jsonArray->GetSize() == 0);
+}
+
+/**
+ * @tc.name: JsonValueTest009
+ * @tc.desc: Check json wrapper function for array value
+ */
+TEST(JsonValueTest, JsonValueTest009)
+{
+    std::string testJson = R"([null, true, false, -1, 8.88, {"JsonValueTest": "JsonValueTest009"}])";
+
+    auto jsonValue = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
+    ASSERT_TRUE(jsonValue);
+    EXPECT_TRUE(jsonValue->IsArray());
+//    auto jsonArray = jsonValue->GetArray();
+//    ASSERT_TRUE(jsonArray);
+//    EXPECT_TRUE(jsonArray->GetItem(0)->IsNull());
+//    EXPECT_TRUE(jsonArray->GetItem(1)->GetBool() == true);
+//    EXPECT_TRUE(jsonArray->GetItem(2)->GetBool() == false);
+//    EXPECT_TRUE(jsonArray->GetItem(3)->GetInt() == -1);
+//    EXPECT_TRUE(jsonArray->GetItem(4)->GetDouble() == 8.88);
+//    EXPECT_TRUE(jsonArray->GetItem(5)->GetObject()->GetValue("JsonValueTest")->GetString() == "JsonValueTest009");
 }

@@ -8,7 +8,6 @@
 #include "cJSON.h"
 
 #include "json_value.h"
-#include "json_object.h"
 
 namespace wtf {
 class JsonValueImpl : public JsonValue {
@@ -16,6 +15,8 @@ public:
     JsonValueImpl() = default;
 
     explicit JsonValueImpl(cJSON* object);
+
+    JsonValueImpl(cJSON* object, bool isRoot);
 
     ~JsonValueImpl();
 
@@ -41,16 +42,16 @@ public:
 
     std::string GetString() const override;
 
-    bool Contains(const std::string& key) const override;
-
     std::unique_ptr<JsonValue> GetValue(const std::string& key) const override;
 
-    std::unique_ptr<JsonObject> GetObject() const override;
+    bool Contains(const std::string& key) const override;
 
-    //JsonValue& operator [](const std::string key) const override;
+    int Put(const char* key, const char* value) override;
 
 private:
     cJSON* object_ = nullptr;
+
+    bool isRoot_ = false;
 };
 } // namespace wtf
 
