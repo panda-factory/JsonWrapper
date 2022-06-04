@@ -1,11 +1,11 @@
 //
-// Created by guozhenxiong on 2022-06-02.
+// Created by guozhenxiong on 2022-06-03.
 //
 
 #ifndef JSONWRAPPER_JSON_VALUE_IMPL_H
 #define JSONWRAPPER_JSON_VALUE_IMPL_H
 
-#include "cJSON.h"
+#include <rapidjson/document.h>
 
 #include "json_value.h"
 
@@ -14,9 +14,13 @@ class JsonValueImpl : public JsonValue {
 public:
     JsonValueImpl() = default;
 
-    explicit JsonValueImpl(cJSON* object);
+    explicit JsonValueImpl(rapidjson::Document* document);
 
-    JsonValueImpl(cJSON* object, bool isRoot);
+    explicit JsonValueImpl(rapidjson::Value* value);
+
+    JsonValueImpl(rapidjson::Document* document, bool isRoot);
+
+    JsonValueImpl(rapidjson::Document* document, rapidjson::Value* value);
 
     ~JsonValueImpl();
 
@@ -78,10 +82,14 @@ public:
 
     std::string ToString() override;
 
-    void* GetJsonData() const { return object_; };
+    void* GetJsonData() const {return value_;}
 
 private:
-    cJSON* object_ = nullptr;
+    rapidjson::Document* document_ = nullptr;
+
+    rapidjson::Value* value_ = nullptr;
+
+    rapidjson::Value::ValueIterator itr_ = nullptr;
 
     bool isRoot_ = false;
 };

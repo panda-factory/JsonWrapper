@@ -20,7 +20,8 @@ IF(GTESTSRC_FOUND)
     INCLUDE_DIRECTORIES(${PROJECT_ROOT_PATH}/include)
 
     ADD_EXECUTABLE(${TARGET_NAME}
-        json_array_for_range.cpp
+        json_array_iterator_test.cpp
+        json_array_put_test.cpp
         json_object_put_test.cpp
         json_type_test.cpp
         json_value_test.cpp

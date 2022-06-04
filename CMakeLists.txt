@@ -6,7 +6,8 @@ project(jsonwrapper VERSION 0.0.0
     LANGUAGES CXX)
 
 option(BUILDING_SHARED "compile for shared library" OFF)
-option(USE_CJSON "enable benchmark test for taskrunner" ON)
+option(USE_CJSON "enable benchmark test for taskrunner" OFF)
+option(USE_RAPIDJSON "enable benchmark test for taskrunner" OFF)
 option(ENABLE_BENCHMARK "enable benchmark test for taskrunner" OFF)
 option(ENABLE_UNITTESTS "enable UT for showmaker" ON)
 option(ENABLE_EXAMPLES "enable examples for taskrunner" ON)
@@ -16,10 +17,15 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/")
 set(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/")
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+##
+set(USE_CJSON OFF)
+set(USE_RAPIDJSON ON)
+
 add_subdirectory(src)
 
 if (USE_CJSON)
     add_subdirectory(third-party/cJSON)
+elseif(USE_RAPIDJSON)
 endif()
 
 

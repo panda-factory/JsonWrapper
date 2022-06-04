@@ -14,19 +14,29 @@ const JsonMessageCodec& JsonMessageCodec::GetInstance()
     return instance;
 }
 
-std::unique_ptr<JsonValue> JsonMessageCodecImpl::DecodeMessageInternal(const uint8_t* binaryMessage,
-                                                                       const size_t messageSize) const
+std::unique_ptr<JsonValue> JsonMessageCodecImpl::DecodeMessageInternal(const std::string& msg) const
 {
-    return std::make_unique<JsonValueImpl>(cJSON_ParseWithOpts(reinterpret_cast<const char*>(binaryMessage),
+    return std::make_unique<JsonValueImpl>(cJSON_ParseWithOpts(msg.c_str(),
                                                                nullptr,
                                                                true),
                                            true);
 }
 
 
-std::unique_ptr<std::vector<uint8_t>> JsonMessageCodecImpl::EncodeMessageInternal(
-        const JsonValue& message) const
+std::string JsonMessageCodecImpl::EncodeMessageInternal(
+        const JsonValue& msg) const
 {
-    return nullptr;
+    std::string result;
+    cJSON* json = reinterpret_cast<cJSON*>(msg.GetJsonData());
+    if (!json) {
+        return result;
+    }
+
+    char* unformatted = cJSON_PrintUnformatted(json);
+    if (unformatted != nullptr) {
+        result = unformatted;
+        cJSON_free(unformatted);
+    }
+    return result;
 }
 } // namespace wtf

@@ -82,6 +82,7 @@ TEST(JsonValueTest, JsonValueTest006)
     EXPECT_TRUE(jsonValue->Contains(key));
     EXPECT_FALSE(jsonValue->Contains(value));
     ASSERT_TRUE(jsonValue->GetValue(key));
+    ASSERT_TRUE(jsonValue->GetValue(key)->IsString());
     EXPECT_EQ(jsonValue->GetValue(key)->GetString(), value);
 }
 
@@ -98,11 +99,10 @@ TEST(JsonValueTest, JsonValueTest007)
     auto jsonValue = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
     ASSERT_TRUE(jsonValue);
     EXPECT_TRUE(jsonValue->IsArray());
-//    EXPECT_TRUE(jsonValue->GetSize() == size);
-//    for(int i = 0; i < jsonArray->GetSize(); i++) {
-//        EXPECT_TRUE(jsonArray->GetItem(i)->GetInt() == testArray[i]);
-//        EXPECT_TRUE((*jsonArray)[i]->GetInt() == testArray[i]);
-//    }
+    EXPECT_TRUE(jsonValue->GetArraySize() == size);
+    for(int i = 0; i < jsonValue->GetArraySize(); i++) {
+        EXPECT_TRUE(jsonValue->GetArrayItem(i)->GetInt() == testArray[i]);
+    }
 }
 
 /**
@@ -116,9 +116,7 @@ TEST(JsonValueTest, JsonValueTest008)
     auto jsonValue = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
     ASSERT_TRUE(jsonValue);
     EXPECT_TRUE(jsonValue->IsArray());
-//    auto jsonArray = jsonValue->GetArray();
-//    ASSERT_TRUE(jsonArray);
-//    EXPECT_TRUE(jsonArray->GetSize() == 0);
+    EXPECT_TRUE(jsonValue->GetArraySize() == 0);
 }
 
 /**
@@ -132,12 +130,10 @@ TEST(JsonValueTest, JsonValueTest009)
     auto jsonValue = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
     ASSERT_TRUE(jsonValue);
     EXPECT_TRUE(jsonValue->IsArray());
-//    auto jsonArray = jsonValue->GetArray();
-//    ASSERT_TRUE(jsonArray);
-//    EXPECT_TRUE(jsonArray->GetItem(0)->IsNull());
-//    EXPECT_TRUE(jsonArray->GetItem(1)->GetBool() == true);
-//    EXPECT_TRUE(jsonArray->GetItem(2)->GetBool() == false);
-//    EXPECT_TRUE(jsonArray->GetItem(3)->GetInt() == -1);
-//    EXPECT_TRUE(jsonArray->GetItem(4)->GetDouble() == 8.88);
-//    EXPECT_TRUE(jsonArray->GetItem(5)->GetObject()->GetValue("JsonValueTest")->GetString() == "JsonValueTest009");
+    EXPECT_TRUE(jsonValue->GetArrayItem(0)->IsNull());
+    EXPECT_TRUE(jsonValue->GetArrayItem(1)->GetBool() == true);
+    EXPECT_TRUE(jsonValue->GetArrayItem(2)->GetBool() == false);
+    EXPECT_TRUE(jsonValue->GetArrayItem(3)->GetInt() == -1);
+    EXPECT_TRUE(jsonValue->GetArrayItem(4)->GetDouble() == 8.88);
+    EXPECT_TRUE(jsonValue->GetArrayItem(5)->GetValue("JsonValueTest")->GetString() == "JsonValueTest009");
 }

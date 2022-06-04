@@ -131,6 +131,7 @@ TEST(JsonTypeTest, JsonTypeTest007)
     auto value = wtf::JsonMessageCodec::GetInstance().DecodeMessage(testJson);
     ASSERT_TRUE(value);
     EXPECT_TRUE(value->IsNull());
+    EXPECT_FALSE(value->IsValid());
 }
 
 /**

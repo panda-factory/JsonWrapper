@@ -3,6 +3,7 @@
 //
 
 #include "json_value_impl.h"
+#include "json_message_codec_impl.h"
 
 namespace wtf {
 
@@ -91,6 +92,11 @@ bool JsonValueImpl::IsNull() const
     return (object_ == nullptr) || cJSON_IsNull(object_);
 }
 
+bool JsonValueImpl::IsValid() const
+{
+    return (object_ != nullptr) && !cJSON_IsInvalid(object_);
+}
+
 bool JsonValueImpl::GetBool() const
 {
     return cJSON_IsTrue(object_) != 0;
@@ -116,9 +122,61 @@ std::unique_ptr<JsonValue> JsonValueImpl::GetValue(const std::string& key) const
     return std::make_unique<JsonValueImpl>(cJSON_GetObjectItem(object_, key.c_str()));
 }
 
+size_t JsonValueImpl::GetArraySize() const
+{
+    return cJSON_GetArraySize(object_);
+}
+
+std::unique_ptr<JsonValue> JsonValueImpl::GetArrayItem(int32_t index) const
+{
+    return std::make_unique<JsonValueImpl>(cJSON_GetArrayItem(object_, index));
+}
+
 bool JsonValueImpl::Contains(const std::string& key) const
 {
     return cJSON_HasObjectItem(object_, key.c_str());
+}
+
+int JsonValueImpl::Put(const char* key, bool value)
+{
+    if (key == nullptr) {
+        return -1;
+    }
+
+    cJSON* child = cJSON_CreateBool(value);
+    if (child == nullptr) {
+        return -1;
+    }
+    cJSON_AddItemToObject(object_, key, child);
+    return 0;
+}
+
+int JsonValueImpl::Put(const char* key, int32_t value)
+{
+    if (key == nullptr) {
+        return -1;
+    }
+
+    cJSON* child = cJSON_CreateNumber(static_cast<double>(value));
+    if (child == nullptr) {
+        return -1;
+    }
+    cJSON_AddItemToObject(object_, key, child);
+    return 0;
+}
+
+int JsonValueImpl::Put(const char* key, double value)
+{
+    if (key == nullptr) {
+        return -1;
+    }
+
+    cJSON* child = cJSON_CreateNumber(value);
+    if (child == nullptr) {
+        return -1;
+    }
+    cJSON_AddItemToObject(object_, key, child);
+    return 0;
 }
 
 int JsonValueImpl::Put(const char* key, const char* value)
@@ -133,5 +191,79 @@ int JsonValueImpl::Put(const char* key, const char* value)
     }
     cJSON_AddItemToObject(object_, key, child);
     return true;
+}
+
+int JsonValueImpl::Put(const char* key, const std::unique_ptr<JsonValue>& value)
+{
+    if (!value || !key) {
+        return -1;
+    }
+    cJSON* jsonObject = cJSON_Duplicate(reinterpret_cast<const cJSON*>(value->GetJsonData()), true);
+    if (jsonObject == nullptr) {
+        return -1;
+    }
+
+    cJSON_AddItemToObject(object_, key, jsonObject);
+    return 0;
+}
+
+int JsonValueImpl::Push(bool value)
+{
+    cJSON* child = cJSON_CreateBool(value);
+    if (child == nullptr) {
+        return -1;
+    }
+    cJSON_AddItemToArray(object_, child);
+    return 0;
+}
+
+int JsonValueImpl::Push(int32_t value)
+{
+    return Push(static_cast<double>(value));
+}
+
+int JsonValueImpl::Push(double value)
+{
+    cJSON* child = cJSON_CreateNumber(value);
+    if (child == nullptr) {
+        return -1;
+    }
+    cJSON_AddItemToArray(object_, child);
+    return 0;
+}
+
+int JsonValueImpl::Push(const char* value)
+{
+    cJSON* child = cJSON_CreateString(value);
+    if (child == nullptr) {
+        return -1;
+    }
+    cJSON_AddItemToArray(object_, child);
+    return 0;
+}
+
+int JsonValueImpl::Push(const std::unique_ptr<JsonValue>& value)
+{
+    cJSON* child = cJSON_Duplicate(reinterpret_cast<cJSON*>(value->GetJsonData()), true);
+    if (child == nullptr) {
+        return -1;
+    }
+    cJSON_AddItemToArray(object_, child);
+    return 0;
+}
+
+Iterator JsonValueImpl::begin () const
+{
+    return Iterator(std::make_unique<JsonValueImpl>(object_));
+}
+
+Iterator JsonValueImpl::end () const
+{
+    return Iterator(std::make_unique<JsonValueImpl>(nullptr));
+}
+
+std::string JsonValueImpl::ToString()
+{
+    return std::move(JsonMessageCodecImpl::GetInstance().EncodeMessage(*this));
 }
 } // namespace wtf
