@@ -9,8 +9,8 @@ option(BUILDING_SHARED "compile for shared library" OFF)
 option(USE_CJSON "enable benchmark test for taskrunner" OFF)
 option(USE_RAPIDJSON "enable benchmark test for taskrunner" OFF)
 option(ENABLE_BENCHMARK "enable benchmark test for taskrunner" OFF)
-option(ENABLE_UNITTESTS "enable UT for showmaker" ON)
-option(ENABLE_EXAMPLES "enable examples for taskrunner" ON)
+option(ENABLE_UNITTESTS "enable UT for showmaker" OFF)
+option(ENABLE_EXAMPLES "enable examples for taskrunner" OFF)
 
 set(PROJECT_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin/")
@@ -18,8 +18,8 @@ set(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/")
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 ##
-set(USE_CJSON OFF)
-set(USE_RAPIDJSON ON)
+set(USE_CJSON ON)
+set(USE_RAPIDJSON OFF)
 
 add_subdirectory(src)
 

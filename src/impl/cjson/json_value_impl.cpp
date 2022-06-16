@@ -31,6 +31,11 @@ std::unique_ptr<JsonValue> JsonValue::Create(const char* str, bool isRoot)
     return std::make_unique<JsonValueImpl>(cJSON_CreateString(str), isRoot);
 }
 
+std::unique_ptr<JsonValue> JsonValue::Create(const std::string& str, bool isRoot)
+{
+    return std::make_unique<JsonValueImpl>(cJSON_CreateString(str.c_str()), isRoot);
+}
+
 std::unique_ptr<JsonValue> JsonValue::CreateObject(bool isRoot)
 {
     return std::make_unique<JsonValueImpl>(cJSON_CreateObject(), isRoot);
